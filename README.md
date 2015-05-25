@@ -36,6 +36,8 @@ DRBD user's guide is available at http://drbd.linbit.com/users-guide-emb/drbd-us
 
 3. watch on both nodes (`watch cat /proc/drbd`) DRBD volumes getting created and sync'ed.
 
+4. have fun!
+
 # License
 
 MIT
