@@ -5,7 +5,7 @@
 Ansible playbook & Vagrant file to set up a DRBD sandbox.
 
 Specifications:
-- [chef/centos-7.0](https://atlas.hashicorp.com/chef/boxes/centos-7.0) Vagrant box
+- Le Monde CentOS 7.0 Vagrant box
 - DRBD 8.4 from [El Repo](http://elrepo.org/)
 - two nodes setup:
   - node1 (172.30.105.31) as primary
@@ -25,11 +25,16 @@ DRBD user's guide is available at http://drbd.linbit.com/users-guide-emb/drbd-us
 
 ## Setup
 
-- Launch node1 and node2
+1. launch node1 and node2 :
+```
 $ vagrant up
-- ssh to the boxes
-$ vagrant ssh <node>
-- watch DRBD volumes getting created and sync'ed (`watch cat /proc/drbd`).
+```
+2. ssh to the boxes :
+```
+$ vagrant ssh node1
+$ vagrant ssh node2
+```
+3. watch DRBD volumes getting created on both nodes and sync'ed (`watch cat /proc/drbd`).
 
 # License
 
