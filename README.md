@@ -26,15 +26,15 @@ DRBD user's guide is available at http://drbd.linbit.com/users-guide-emb/drbd-us
 ## Setup
 
 1. launch node1 and node2 :
-```
-$ vagrant up
-```
+
+        $ vagrant up
+
 2. ssh to the boxes :
-```
-$ vagrant ssh node1
-$ vagrant ssh node2
-```
-3. watch DRBD volumes getting created on both nodes and sync'ed (`watch cat /proc/drbd`).
+
+        $ vagrant ssh node1
+        $ vagrant ssh node2
+
+3. watch on both nodes (`watch cat /proc/drbd`) DRBD volumes getting created and sync'ed.
 
 # License
 
