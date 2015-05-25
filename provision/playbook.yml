@@ -1,0 +1,159 @@
+#
+# setup a drbd sandbox
+#
+# == THIS IS A SANDBOX. IT IS NOT SUITABLE FOR PRODUCTION! ==
+#
+
+#
+# setup hostnames
+#
+- hosts: node1
+  sudo: true
+  tasks:
+  - hostname: name=node1
+
+- hosts: node2
+  sudo: true
+  tasks:
+  - hostname: name=node2
+
+#
+# setup drbd on node1 and node2
+#
+- hosts: all
+  sudo: true
+  tasks:
+
+  #
+  # add repos
+  #
+  - name: ensure elrepo repo is present
+    yum: name=http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+
+  - name: ensure elrepo key is imported
+    rpm_key: state=present key=https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+
+  #
+  # drbd service
+  #
+  # /!\ versions pined for Vagrant box kernel version
+  #
+  - name: ensure kmod-drbd84 rpm is present
+    yum: name=kmod-drbd84-8.4.5-1.el7.elrepo state=present
+
+  - name: ensure drbd84-utils rpm is present
+    yum: name=drbd84-utils-8.9.1-1.el7.elrepo state=present
+
+  #
+  # lvm volumes
+  #
+  - name: create logical volume lv0
+    lvol: vg=vg0 lv=lv0 size=2g state=present
+
+  - name: create logical volume lv1
+    lvol: vg=vg0 lv=lv1 size=2g state=present
+
+  - name: create logical volume lv1
+    lvol: vg=vg0 lv=lv2 size=2g state=present
+
+  #
+  # drbd initial setup
+  #
+  - name: ensure drbd kernel module is loaded
+    modprobe: name=drbd state=present
+
+  - name: ensure drbd service is enabled
+    service: name=drbd enabled=yes
+
+  - name: ensure drbd service is started
+    service: name=drbd state=started
+
+  #
+  # drbd configuration (comes after setup)
+  #
+  - name: ensure /etc/drbd.conf is present
+    copy: src=files/drbd/drbd.conf dest=/etc/drbd.conf owner=root group=root
+
+  - name: ensure /etc/drbd.d/ is present
+    copy: src=files/drbd/drbd.d/ dest=/etc/drbd.d/ owner=root group=root
+
+  #
+  # setup drbd volumes
+  #
+  - name: create vol0 metadata
+    command: drbdadm create-md vol0 creates=/var/run/drbd/drbd-resource-vol0.conf
+
+  - name: enable vol0
+    command: drbdadm up vol0 creates=/var/run/drbd/drbd-resource-vol0.conf
+
+  - name: create vol1 metadata
+    command: drbdadm create-md vol1 creates=/var/run/drbd/drbd-resource-vol1.conf
+
+  - name: enable vol1
+    command: drbdadm up vol1 creates=/var/run/drbd/drbd-resource-vol1.conf
+
+  - name: create vol2 metadata
+    command: drbdadm create-md vol2 creates=/var/run/drbd/drbd-resource-vol2.conf
+
+  - name: enable vol2
+    command: drbdadm up vol2 creates=/var/run/drbd/drbd-resource-vol2.conf
+
+#
+# end of common section for node1 and node2
+#
+
+#
+# postinstall section on primary node (node1)
+#
+- hosts: node1
+  sudo: true
+  tasks:
+
+    #
+    # vol0
+    #
+  - name: declare node1 as primary for vol0
+    command: drbdadm primary --force vol0
+
+  - name: create filesystem on vol0
+    filesystem: fstype=ext4 dev=/dev/drbd0
+
+  - name: add entry in fstab for vol0
+    mount: name=/mnt/vol0 src=/dev/drbd0 fstype=ext4 state=present
+
+  - name: mount vol0
+    mount: name=/mnt/vol0 src=/dev/drbd0 fstype=ext4 state=mounted
+
+    #
+    # vol1
+    #
+  - name: declare node1 as primary for vol1
+    command: drbdadm primary --force vol1
+
+  - name: create filesystem on vol1
+    filesystem: fstype=ext4 dev=/dev/drbd1
+
+  - name: add entry in fstab for vol1
+    mount: name=/mnt/vol1 src=/dev/drbd1 fstype=ext4 state=present
+
+  - name: mount vol1
+    mount: name=/mnt/vol1 src=/dev/drbd1 fstype=ext4 state=mounted
+
+    #
+    # vol2
+    #
+  - name: declare node1 as primary for vol2
+    command: drbdadm primary --force vol2
+
+  - name: create filesystem on vol2
+    filesystem: fstype=ext4 dev=/dev/drbd2
+
+  - name: add entry in fstab for vol2
+    mount: name=/mnt/vol2 src=/dev/drbd2 fstype=ext4 state=present
+
+  - name: mount vol2
+    mount: name=/mnt/vol2 src=/dev/drbd2 fstype=ext4 state=mounted
+
+#
+# end of postinstall tasks on primary node (node1)
+#
