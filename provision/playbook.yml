@@ -39,22 +39,19 @@
   # /!\ versions pined for Vagrant box kernel version
   #
   - name: ensure kmod-drbd84 rpm is present
-    yum: name=kmod-drbd84-8.4.5-1.el7.elrepo state=present
-
-  - name: ensure drbd84-utils rpm is present
-    yum: name=drbd84-utils-8.9.1-1.el7.elrepo state=present
+    yum: name=kmod-drbd84-8.4.6-1.el7.elrepo state=present
 
   #
   # lvm volumes
   #
   - name: create logical volume lv0
-    lvol: vg=vg0 lv=lv0 size=2g state=present
+    lvol: vg=centos lv=lv0 size=2g state=present
 
   - name: create logical volume lv1
-    lvol: vg=vg0 lv=lv1 size=2g state=present
+    lvol: vg=centos lv=lv1 size=2g state=present
 
   - name: create logical volume lv1
-    lvol: vg=vg0 lv=lv2 size=2g state=present
+    lvol: vg=centos lv=lv2 size=2g state=present
 
   #
   # drbd initial setup

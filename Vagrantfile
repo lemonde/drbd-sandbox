@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "http://arnold.lemonde-interactif.fr/devops/centos7_dev-1.0.box";
+  config.vm.box = "ogrange/centos-7.1"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -72,7 +72,10 @@ Vagrant.configure(2) do |config|
   (1..2).each do |i|
     config.vm.define "node#{i}" do |node|
       node.vm.network "private_network", ip: "172.30.105.3#{i}"
-      node.vm.provision  :ansible do |ansible|
+      # workaround for https://github.com/mitchellh/vagrant/issues/5590
+      # from http://qiita.com/kutsushitaneko/items/18ed70bdc6075c1d46df
+      node.vm.provision "shell", inline: "nmcli connection reload; systemctl restart network.service"
+      node.vm.provision :ansible do |ansible|
       	ansible.playbook = "provision/playbook.yml"
       end
     end

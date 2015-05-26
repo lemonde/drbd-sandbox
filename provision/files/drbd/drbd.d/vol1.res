@@ -1,7 +1,7 @@
 resource vol1 {
 
     device      /dev/drbd1;
-    disk        /dev/vg0/lv1;
+    disk        /dev/centos/lv1;
     meta-disk   internal;
 
     on node1 {

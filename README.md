@@ -5,7 +5,7 @@
 Ansible playbook & Vagrant file to set up a DRBD sandbox.
 
 Specifications:
-- Le Monde CentOS 7.0 Vagrant box
+- CentOS 7.1 (box forked from [Bento](https://github.com/chef/bento/))
 - DRBD 8.4 from [El Repo](http://elrepo.org/)
 - two nodes setup:
   - node1 (172.30.105.31) as primary
